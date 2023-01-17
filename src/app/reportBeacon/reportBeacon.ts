@@ -3,6 +3,7 @@
  * @author renshiwei
  * Date: 2023/1/11 19:34
  **/
+import {ethers} from 'ethers'
 import {KinghashValidator, sortDesc, toMerkleTree} from './kinghashValidator'
 import {splitIntoGroups} from '../../lib/utils/array'
 import {getAsyncValidatorsBySlot} from '../../api/beacon'
@@ -11,7 +12,7 @@ import {GWEI} from '../../lib/beacon/beacon'
 import {toSlot} from '../../lib/beacon/epoch'
 import {config} from '../../config/config'
 import {logger} from "../../lib/log/log";
-import {ethers} from 'ethers'
+import {sleep} from '../../lib/utils/sleep'
 
 export class ReportBeacon {
     epochId: ethers.BigNumber;
@@ -25,25 +26,69 @@ export class ReportBeacon {
         this.beaconValidators = beaconValidators;
         this.validatorRankingRoot = validatorRankingRoot;
     }
+
+    toString(): string {
+        return `ReportBeacon { epochId: ${this.epochId.toString()}, beaconBalance: ${this.beaconBalance.toString()}, beaconValidators: ${this.beaconValidators}, validatorRankingRoot: ${this.validatorRankingRoot} }`;
+    }
 }
 
-export async function reportBeacon() {
+// The report sleep frequency was 10 minutes
+export const REPORT_SLEEP_FREQUENCY = 1000 * 60 * 10;
+const currentOracleMember = oracleContract.getOracleContract().address;
+
+export async function runReportBeacon() {
+    while (true) {
+        let needReport;
+        isReport().then((r: boolean) => {
+            needReport = r;
+        })
+
+        if (!needReport) {
+            await sleep(REPORT_SLEEP_FREQUENCY);
+            continue;
+        }
+
+        try {
+            await reportBeacon();
+        } catch (err) {
+            switch (true) {
+                case err instanceof ServiceException:
+
+                    break;
+                case err instanceof ContractException:
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+async function isReport(): Promise<boolean> {
+    // Whether the frame reaches quorum this time
     let isQuorum;
     await oracleContract.isQuorum().then((q: boolean) => {
         isQuorum = q;
     })
     if (isQuorum) {
-        return;
+        logger.debug("isQuorum:%s", isQuorum);
+        return false;
     }
 
+    // Whether the current oracleMember is reporting Beacon
     let isReportedBeacon;
-    await oracleContract.isReportBeacon(oracleContract.getOracleContract().address).then((r: boolean) => {
+    await oracleContract.isReportBeacon(currentOracleMember).then((r: boolean) => {
         isReportedBeacon = r;
     })
     if (isReportedBeacon) {
-        return;
+        logger.debug("OracleMember address:%s  isReportedBeacon:%s", currentOracleMember, isReportedBeacon);
+        return false;
     }
+    return true;
+}
 
+async function reportBeacon() {
     let reportBeaconRes: ReportBeacon = new ReportBeacon(ethers.BigNumber.from(0), ethers.BigNumber.from(0), 0, "");
 
     await buildReportBeacon().then(r => {
@@ -51,9 +96,8 @@ export async function reportBeacon() {
     })
     // oracle reportBeacon
     await oracleContract.reportBeacon(reportBeaconRes.epochId, reportBeaconRes.beaconBalance, reportBeaconRes.beaconValidators, reportBeaconRes.validatorRankingRoot).then(() => {
-
+        logger.info("[reportBeacon success] OracleMember address:%s  ReportedBeacon res:%s", currentOracleMember, reportBeaconRes.toString());
     })
-
 }
 
 async function buildReportBeacon(): Promise<ReportBeacon> {
@@ -74,7 +118,7 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
     // Filter invalid Pubkeys
     pubkeys = pubkeys.filter(pubkey => pubkey !== "0x");
 
-    logger.info("[buildReportBeacon] expectEpochId:%i contract pubkey count:%i. invalid pubkeys('0x') count:%i. effective pubkey count:%i", expectEpochId, pubkeyOriginLen, pubkeyOriginLen - pubkeys.length, pubkeys.length);
+    logger.debug("[buildReportBeacon] expectEpochId:%i contract pubkey count:%i. invalid pubkeys('0x') count:%i. effective pubkey count:%i", expectEpochId, pubkeyOriginLen, pubkeyOriginLen - pubkeys.length, pubkeys.length);
 
     let kinghashValidators: KinghashValidator[] = [];
     let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from(0), ethers.BigNumber.from(0), 0, "");
@@ -96,12 +140,16 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
     let splitPubkeys = splitIntoGroups(pubkeys, 1000);
     for (let partPubkeys of splitPubkeys) {
         try {
-            let partRes = getBalanceRetry(partPubkeys, slot, validatorMap);
+            let partRes = {beaconBalance: 0, beaconValidators: 0};
+            await getBalanceRetry(partPubkeys, slot, validatorMap).then(r => {
+                partRes = r;
+            });
             beaconBalance.add(partRes.beaconBalance);
             validators += partRes.beaconValidators;
         } catch (error) {
-            logger.error("Error: ", error);
-            return reportBeaconRes;
+            if (!(error instanceof ServiceException)) {
+                throw new ServiceException("BEACON_REQUEST_ERROR", "Request beacon chain exception");
+            }
         }
     }
 
@@ -128,7 +176,7 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
 }
 
 
-function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string, validatorMap: Map<string, KinghashValidator>): { beaconBalance: number; beaconValidators: number } {
+async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string, validatorMap: Map<string, KinghashValidator>): Promise<{ beaconBalance: number; beaconValidators: number }> {
     let isFinsh = false;
     let balance = 0;
     let validators = 0;
@@ -138,7 +186,7 @@ function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string,
         if (isFinsh) {
             break;
         }
-        getAsyncValidatorsBySlot(
+        await getAsyncValidatorsBySlot(
             config.beaconAddr,
             slot,
             partPubkeys
@@ -161,7 +209,7 @@ function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string,
             .catch(() => {
                 logger.warn("Failed to access the beacon chain. retry Count:%i", i);
                 if (i === 2) {
-                    throw new Error("Failed to retry the beacon chain request 3 times")
+                    throw new ServiceException("BEACON_REQUEST_ERROR", "Failed to retry the beacon chain request 3 times")
                 }
             })
     }

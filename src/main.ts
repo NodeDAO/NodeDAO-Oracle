@@ -1,10 +1,8 @@
-import {config} from './config/config';
+import {runReportBeacon} from './app/reportBeacon/reportBeacon';
 
 function main() {
-    console.log(config.network);
-    console.log(config.beaconNodeAddr);
-    console.log(config.log.level);
+    runReportBeacon().then();
 }
 
-main();
+await main();
 
