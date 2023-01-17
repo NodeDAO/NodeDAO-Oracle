@@ -1,0 +1,9 @@
+{
+  "log": {
+    "level": "info"
+  },
+  "network": "mainnet",
+  "beaconNodeAddr": "",
+  "executionLayerAddr": "",
+  "privateKey": ""
+}

@@ -1,0 +1,14 @@
+/node_modules/
+/build/
+/lib/
+.idea/*
+.DS_Store
+coverage
+*.log
+/data/*
+bin/**/*
+yarn.lock
+
+dist
+
+*/**/config-dev.json
