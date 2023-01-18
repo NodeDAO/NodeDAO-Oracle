@@ -1,11 +1,12 @@
 FROM node:16.17.1  As builder
-WORKDIR /usr/src/app
-COPY . .
+WORKDIR /app
+COPY . ./
 RUN yarn install
 RUN yarn run build-all
 
-FROM node:16.17.1-alpine As production
-WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-ENTRYPOINT ["node", "--es-module-specifier-resolution=node","./dist/tsc/main.js"]
+FROM gcr.io/distroless/nodejs16-debian11:nonroot As production
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+USER nonroot
+ENTRYPOINT ["/nodejs/bin/node", "--es-module-specifier-resolution=node","./dist/tsc/main.js"]

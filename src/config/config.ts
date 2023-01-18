@@ -27,7 +27,7 @@ export const config = yargs(process.argv.slice(2))
         // set --config default
         config: {
             type: 'string',
-            default: 'src/config/config-default.json',
+            default: process.env.NODE_ENV === 'production' ? 'src/config/config-default.json' : 'src/config/config-dev.json',
             demandOption: false
         },
     })
