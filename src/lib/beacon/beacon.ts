@@ -34,7 +34,7 @@ export function getTotalBeaconBalances(pubkeys: string[], slot: string) {
     // 1000个为一组去信标链获取数据
     for (let partPubkeys of splitPubkeys) {
         getAsyncValidatorsBySlot(
-            config.beaconAddr,
+            config.beaconNodeAddr,
             slot,
             partPubkeys
         )

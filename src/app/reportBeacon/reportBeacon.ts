@@ -13,6 +13,8 @@ import {toSlot} from '../../lib/beacon/epoch'
 import {config} from '../../config/config'
 import {logger} from "../../lib/log/log";
 import {sleep} from '../../lib/utils/sleep'
+import {ServiceException} from '../../lib/error/ServiceException';
+import {ContractException} from '../../lib/error/ContractException';
 
 export class ReportBeacon {
     epochId: ethers.BigNumber;
@@ -33,10 +35,12 @@ export class ReportBeacon {
 }
 
 // The report sleep frequency was 10 minutes
-export const REPORT_SLEEP_FREQUENCY = 1000 * 60 * 10;
+// export const REPORT_SLEEP_FREQUENCY = 1000 * 60 * 10;
+export const REPORT_SLEEP_FREQUENCY = 1000;
 const currentOracleMember = oracleContract.getOracleContract().address;
 
 export async function runReportBeacon() {
+    logger.debug("report beacon server start...");
     while (true) {
         let needReport;
         isReport().then((r: boolean) => {
@@ -187,7 +191,7 @@ async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | s
             break;
         }
         await getAsyncValidatorsBySlot(
-            config.beaconAddr,
+            config.beaconNodeAddr,
             slot,
             partPubkeys
         )

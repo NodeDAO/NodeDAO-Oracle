@@ -1,8 +1,11 @@
 import {runReportBeacon} from './app/reportBeacon/reportBeacon';
+import {logger} from "./lib/log/log";
 
-function main() {
-    runReportBeacon().then();
+async function main() {
+    logger.info("start.. ")
+    await runReportBeacon().then();
+    logger.info("end.. ")
 }
 
-await main();
+main();
 

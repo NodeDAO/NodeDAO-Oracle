@@ -4,9 +4,9 @@
  * Date: 2023/1/12 11:50
  **/
 import {ethers} from "ethers";
-import {config} from "../config/config"
-import beaconOracleAbi from './abi/beaconOracle.json'
-import vNFTAbi from './abi/vNFT.json'
+import {config} from "../config/config";
+import beaconOracleAbi from './abi/beaconOracle.json';
+import vNFTAbi from './abi/vNFT.json';
 
 const BEACON_ORACLE_CONTRACT_ADDR = "0x1075C96089E431c258863B96a16e80eEdD1c670a";
 const VNFT_CONTRACT_ADDR = "0x7691c4051b3B7c149D938D1Bb8758eA155c0991E";

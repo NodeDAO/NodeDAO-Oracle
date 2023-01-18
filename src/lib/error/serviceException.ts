@@ -3,7 +3,7 @@
  * @author renshiwei
  * Date: 2023/1/17 19:30
  **/
-class ServiceException extends Error {
+export class ServiceException extends Error {
     code: string;
 
     constructor(code: string, msg: string) {

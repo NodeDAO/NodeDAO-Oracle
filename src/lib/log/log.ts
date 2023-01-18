@@ -8,7 +8,7 @@ import {createLogger, format, transports} from 'winston';
 import {config} from '../../config/config'
 
 export const logger = createLogger({
-    level: config.log.level || process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    level: config.logLevel || process.env.NODE_ENV === 'production' ? 'info' : 'debug',
     format: format.combine(
         // format.colorize(),
         format.timestamp({
