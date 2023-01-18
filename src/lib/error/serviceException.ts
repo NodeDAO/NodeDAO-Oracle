@@ -5,9 +5,11 @@
  **/
 export class ServiceException extends Error {
     code: string;
+    msg: string;
 
     constructor(code: string, msg: string) {
         super(msg);
+        this.msg = msg;
         this.name = "ServiceException";
         this.code = code;
     }

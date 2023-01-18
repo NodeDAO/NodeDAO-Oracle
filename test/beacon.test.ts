@@ -14,37 +14,44 @@
  * Date: 2022/12/30 15:35
  **/
 
-import { describe, test } from "@jest/globals";
-import { getAsyncValidatorsBySlot } from "../src/api/beacon";
-import { config } from "../src/config/config";
+import {describe, jest, test} from "@jest/globals";
+import {getAsyncValidatorsBySlot} from "../src/api/beacon";
+import {config} from "../src/config/config";
+import {ethers} from 'ethers'
 
 describe("beacon validator info", () => {
-  const beaconAddr = config.beaconNodeAddr;
+    jest.setTimeout(30000);
+    const beaconAddr = config.beaconNodeAddr;
 
-  test("one validator", (done) => {
-    getAsyncValidatorsBySlot(beaconAddr, "5499327", [
-      "0xae549df8106d04be04f39c29851f64f2e96f0403754b3a38428a0b0f51ddbf9e3ce95eca3bd09cf837bca458a15daeba",
-    ])
-      .then((response) => {
-        console.log(response.data.data);
-        done();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  });
+    test("one validator", (done) => {
+        getAsyncValidatorsBySlot(beaconAddr, "4793440", [
+            '0x800015473bdc3a7f45ef8eb8abc598bc20021e55ad6e6ad1d745aaef9730dd2c28ec08bf42df18451de94dd4a6d24ec5',
+            '0x80002a650ac64c6c6076f0186e49a8a1e3312d3c4015dcc8d1374afb6fe3df5e7e96203a193770e134b33953e9e469a1'
+        ])
+            .then((response) => {
+                console.log(response.data.data);
+                done();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    });
 
-  test("more validator", (done) => {
-    getAsyncValidatorsBySlot(beaconAddr, "finalized", [
-      "0xae549df8106d04be04f39c29851f64f2e96f0403754b3a38428a0b0f51ddbf9e3ce95eca3bd09cf837bca458a15daeba",
-      "0xb0be626e6ba43a20d99775e38b5a449b060a882520de3d9f40b2f223cf985088d92c0de3b19b9f87aa867c30e6d1951a",
-    ])
-      .then((response) => {
-        console.log(response.data.data);
-        done();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  });
+    test("more validator", (done) => {
+        getAsyncValidatorsBySlot(beaconAddr, "finalized", [
+            '0x800015473bdc3a7f45ef8eb8abc598bc20021e55ad6e6ad1d745aaef9730dd2c28ec08bf42df18451de94dd4a6d24ec5',
+            '0x80002a650ac64c6c6076f0186e49a8a1e3312d3c4015dcc8d1374afb6fe3df5e7e96203a193770e134b33953e9e469a1'
+        ])
+            .then((response) => {
+                console.log(response.data.data);
+                done();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    });
+
+    test("slot", () => {
+        console.log(ethers.BigNumber.from(1478907).toString());
+    });
 });

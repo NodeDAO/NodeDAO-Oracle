@@ -35,9 +35,9 @@ export class ReportBeacon {
 }
 
 // The report sleep frequency was 10 minutes
-// export const REPORT_SLEEP_FREQUENCY = 1000 * 60 * 10;
-export const REPORT_SLEEP_FREQUENCY = 1000;
-const currentOracleMember = oracleContract.getOracleContract().address;
+export const REPORT_SLEEP_FREQUENCY = 1000 * 60 * 10;
+// export const REPORT_SLEEP_FREQUENCY = 1000;
+const currentOracleMember = oracleContract.oracleMemberAddress;
 
 export async function runReportBeacon() {
     logger.debug("report beacon server start...");
@@ -51,10 +51,12 @@ export async function runReportBeacon() {
 
             if (!needReport) {
                 await sleep(REPORT_SLEEP_FREQUENCY);
-                // continue;
+                continue;
             }
 
-            await reportBeacon();
+            await reportBeacon().then().catch((e => {
+                logger.error("[reportBeacon error] OracleMember address:%s", currentOracleMember, e);
+            }));
 
             await sleep(REPORT_SLEEP_FREQUENCY);
         } catch (err) {
@@ -77,7 +79,9 @@ async function isReport(): Promise<boolean> {
     let isQuorum;
     await oracleContract.isQuorum().then((q: boolean) => {
         isQuorum = q;
-    })
+    }).catch((e => {
+        logger.error("[reportBeacon error for isQuorum] err:%s", e);
+    }));
     if (isQuorum) {
         logger.debug("isQuorum:%s", isQuorum);
         return false;
@@ -87,7 +91,9 @@ async function isReport(): Promise<boolean> {
     let isReportedBeacon;
     await oracleContract.isReportBeacon(currentOracleMember).then((r: boolean) => {
         isReportedBeacon = r;
-    })
+    }).catch((e => {
+        logger.error("[reportBeacon error for isReportBeacon] err:%s", e);
+    }));
     if (isReportedBeacon) {
         logger.debug("OracleMember address:%s  isReportedBeacon:%s", currentOracleMember, isReportedBeacon);
         return false;
@@ -96,32 +102,45 @@ async function isReport(): Promise<boolean> {
 }
 
 async function reportBeacon() {
-    let reportBeaconRes: ReportBeacon = new ReportBeacon(ethers.BigNumber.from(0), ethers.BigNumber.from(0), 0, "");
+    let reportBeaconRes: ReportBeacon = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
 
     await buildReportBeacon().then(r => {
         reportBeaconRes = r;
+    }).catch(e => {
+        console.log(e)
+        logger.error("buildReportBeacon error.reportBeaconRes:", reportBeaconRes, e)
     })
+
+    logger.debug("reportBeaconRes:", reportBeaconRes)
+
     // oracle reportBeacon
     await oracleContract.reportBeacon(reportBeaconRes.epochId, reportBeaconRes.beaconBalance, reportBeaconRes.beaconValidators, reportBeaconRes.validatorRankingRoot).then(() => {
         logger.info("[reportBeacon success] OracleMember address:%s  ReportedBeacon res:%s", currentOracleMember, reportBeaconRes.toString());
     }).catch((e => {
         logger.info("[reportBeacon error] OracleMember address:%s  ReportedBeacon res:%s error:", currentOracleMember, reportBeaconRes.toString(), e);
-    }))
+    }));
 }
 
 async function buildReportBeacon(): Promise<ReportBeacon> {
     // Obtain the expectEpochId of the contract
-    let expectEpochId: ethers.BigNumber = ethers.BigNumber.from(0);
+    let expectEpochId: ethers.BigNumber = ethers.BigNumber.from("0");
     await oracleContract.getExpectedEpochId().then((epoch: ethers.BigNumber) => {
         expectEpochId = epoch;
-    });
-    let slot = toSlot(expectEpochId);
+        logger.debug("expectEpochId:%i", expectEpochId);
+    }).catch((e => {
+        logger.error("[reportBeacon error for getExpectedEpochId] err:%s", e);
+    }));
+
+    let slot = toSlot(expectEpochId).toString();
+    console.log(slot)
 
     // Request the Smart contract to get all the pubkeys
     let pubkeys: string[] = [];
     await oracleContract.getPubkeys().then((p: string[]) => {
         pubkeys = p;
-    })
+    }).catch((e => {
+        logger.error("[reportBeacon error for nft getPubkeys] err:%s", e);
+    }));
 
     let pubkeyOriginLen = pubkeys.length;
     // Filter invalid Pubkeys
@@ -130,7 +149,7 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
     logger.debug("[buildReportBeacon] expectEpochId:%i contract pubkey count:%i. invalid pubkeys('0x') count:%i. effective pubkey count:%i", expectEpochId, pubkeyOriginLen, pubkeyOriginLen - pubkeys.length, pubkeys.length);
 
     let kinghashValidators: KinghashValidator[] = [];
-    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from(0), ethers.BigNumber.from(0), 0, "");
+    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
 
     // Construct map data to facilitate subsequent calculation
     let validatorMap = new Map<string, KinghashValidator>();
@@ -139,40 +158,41 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
         let tokenId = 0;
         await oracleContract.tokenIdOfValidator(pubkey).then((token: number) => {
             tokenId = token;
-        })
+        }).catch((e => {
+            logger.error("[reportBeacon error for tokenIds] OracleMember address:%s", currentOracleMember, e);
+        }));
         validatorMap.set(pubkey, new KinghashValidator(pubkey, 0, tokenId));
     }
-
-    let beaconBalance = ethers.BigNumber.from(0);
+    let beaconBalance = ethers.BigNumber.from("0");
     let validators = 0;
     // Split the array,1000 of them into a set of beacon chains to get data
     let splitPubkeys = splitIntoGroups(pubkeys, 1000);
     for (let partPubkeys of splitPubkeys) {
+        let partRes = {beaconBalance: ethers.BigNumber.from("0"), beaconValidators: 0};
         try {
-            let partRes = {beaconBalance: 0, beaconValidators: 0};
             await getBalanceRetry(partPubkeys, slot, validatorMap).then(r => {
                 partRes = r;
-            });
-            beaconBalance.add(partRes.beaconBalance);
-            validators += partRes.beaconValidators;
+            }).catch((e => {
+                logger.error("[reportBeacon error for beacon info] OracleMember address:%s", currentOracleMember, e);
+            }));
         } catch (error) {
             if (!(error instanceof ServiceException)) {
                 throw new ServiceException("BEACON_REQUEST_ERROR", "Request beacon chain exception");
             }
         }
+        beaconBalance.add(partRes.beaconBalance);
+        validators += partRes.beaconValidators;
     }
-
     kinghashValidators = Array.from(validatorMap.values());
 
     for (let kinghashValidator of kinghashValidators) {
         if (kinghashValidator.validatorBalance === 0) {
             // Process data that is not in the beacon chain
             kinghashValidator.validatorBalance = 32 * 1e18;
-            beaconBalance.add(32 * 1e18);
+            beaconBalance.add(ethers.BigNumber.from(kinghashValidator.validatorBalance.toString()));
             validators++;
         }
     }
-
     sortDesc(kinghashValidators);
     const tree = toMerkleTree(kinghashValidators);
 
@@ -185,9 +205,9 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
 }
 
 
-async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string, validatorMap: Map<string, KinghashValidator>): Promise<{ beaconBalance: number; beaconValidators: number }> {
+async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string, validatorMap: Map<string, KinghashValidator>): Promise<{ beaconBalance: ethers.BigNumber; beaconValidators: number }> {
     let isFinsh = false;
-    let balance = 0;
+    let balance = ethers.BigNumber.from("0");
     let validators = 0;
 
     // Handle the failure three times
@@ -207,7 +227,7 @@ async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | s
                         let kinghashValidator = validatorMap.get(balanceInfo.validator.pubkey) as KinghashValidator;
                         // gwei conversion to wei
                         kinghashValidator.validatorBalance = balanceInfo.balance * GWEI;
-                        balance += kinghashValidator.validatorBalance;
+                        balance.add(kinghashValidator.validatorBalance.toString());
                         validators++;
                         validatorMap.set(balanceInfo.validator.pubkey, kinghashValidator);
                     }
@@ -215,10 +235,10 @@ async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | s
 
                 isFinsh = true;
             })
-            .catch(() => {
-                logger.warn("Failed to access the beacon chain. retry Count:%i", i);
+            .catch((err) => {
+                logger.warn("Failed to access the beacon chain. retry Count:%i err:%s", i, err.message);
                 if (i === 2) {
-                    throw new ServiceException("BEACON_REQUEST_ERROR", "Failed to retry the beacon chain request 3 times")
+                    throw new ServiceException("BEACON_REQUEST_RETRY_ERROR", "Failed to retry the beacon chain request 3 times")
                 }
             })
     }

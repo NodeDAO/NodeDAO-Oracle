@@ -10,6 +10,8 @@ import * as oracleContract from '../src/contracts/oracle'
 describe("oracleBeaconContract test", () => {
     jest.setTimeout(30000);
 
+    let oracleMemberAddress = oracleContract.oracleMemberAddress;
+
     test("expectedEpochId", async () => {
         await oracleContract.getExpectedEpochId().then((epoch: ethers.BigNumber) => {
             console.log("epoch:%i", epoch);
@@ -24,7 +26,7 @@ describe("oracleBeaconContract test", () => {
     });
 
     test("isReportBeacon", async () => {
-        const oracleMemberAddress = "0x892e7c8C5E716e17891ABf9395a0de1f2fc84786";
+        // const oracleMemberAddress = "0xe583DC38863aB4b5A94da77A6628e2119eaD4B18";
         await oracleContract.isReportBeacon(oracleMemberAddress).then((isReportBeacon: boolean) => {
             console.log(isReportBeacon);
         })
@@ -63,5 +65,22 @@ describe("vNFTContract test", () => {
             console.log("tokenId:%i", tokenId);
         })
     });
+
+});
+
+describe("ethers.js", () => {
+
+    test("BigNumber", async () => {
+        let a = 32 * 1e18;
+        let b = ethers.BigNumber.from(a.toString());
+        console.log(b.toString());
+
+        let c = b.add(ethers.BigNumber.from("1000"));
+        console.log(c.toString());
+
+        let d = b.add(b);
+        console.log(d.toString());
+    });
+
 
 });
