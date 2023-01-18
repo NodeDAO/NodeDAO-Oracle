@@ -1,4 +1,11 @@
-FROM harbor.creaverse.top/saas-test/node:14.16.1
-WORKDIR /data/chainup/web3/kinghash-oracle
-ADD ./dist/ ./
-CMD ["node", "./tsc/main.js"]
+FROM node:16.17.1  As builder
+WORKDIR /usr/src/app
+COPY . .
+RUN yarn install
+RUN yarn run build-all
+
+FROM node:16.17.1-alpine As production
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+ENTRYPOINT ["node", "--es-module-specifier-resolution=node","./dist/tsc/main.js"]

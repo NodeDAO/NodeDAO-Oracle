@@ -13,8 +13,8 @@ import {toSlot} from '../../lib/beacon/epoch'
 import {config} from '../../config/config'
 import {logger} from "../../lib/log/log";
 import {sleep} from '../../lib/utils/sleep'
-import {ServiceException} from '../../lib/error/ServiceException';
-import {ContractException} from '../../lib/error/ContractException';
+import {ServiceException} from '../../lib/error/serviceException';
+import {ContractException} from '../../lib/error/contractException';
 
 export class ReportBeacon {
     epochId: ethers.BigNumber;
@@ -42,18 +42,21 @@ const currentOracleMember = oracleContract.getOracleContract().address;
 export async function runReportBeacon() {
     logger.debug("report beacon server start...");
     while (true) {
-        let needReport;
-        isReport().then((r: boolean) => {
-            needReport = r;
-        })
-
-        if (!needReport) {
-            await sleep(REPORT_SLEEP_FREQUENCY);
-            continue;
-        }
-
         try {
+
+            let needReport;
+            isReport().then((r: boolean) => {
+                needReport = r;
+            })
+
+            if (!needReport) {
+                await sleep(REPORT_SLEEP_FREQUENCY);
+                // continue;
+            }
+
             await reportBeacon();
+
+            await sleep(REPORT_SLEEP_FREQUENCY);
         } catch (err) {
             switch (true) {
                 case err instanceof ServiceException:
@@ -101,7 +104,9 @@ async function reportBeacon() {
     // oracle reportBeacon
     await oracleContract.reportBeacon(reportBeaconRes.epochId, reportBeaconRes.beaconBalance, reportBeaconRes.beaconValidators, reportBeaconRes.validatorRankingRoot).then(() => {
         logger.info("[reportBeacon success] OracleMember address:%s  ReportedBeacon res:%s", currentOracleMember, reportBeaconRes.toString());
-    })
+    }).catch((e => {
+        logger.info("[reportBeacon error] OracleMember address:%s  ReportedBeacon res:%s error:", currentOracleMember, reportBeaconRes.toString(), e);
+    }))
 }
 
 async function buildReportBeacon(): Promise<ReportBeacon> {

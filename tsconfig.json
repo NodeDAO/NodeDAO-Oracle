@@ -21,7 +21,6 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "./dist/tsc/",
-    "rootDir": "src",
     "types": [
       "node",
     ],

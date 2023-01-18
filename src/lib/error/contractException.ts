@@ -3,7 +3,7 @@
  * @author renshiwei
  * Date: 2023/1/17 19:30
  **/
-import {ServiceException} from './ServiceException';
+import {ServiceException} from './serviceException';
 
 export class ContractException extends ServiceException {
 

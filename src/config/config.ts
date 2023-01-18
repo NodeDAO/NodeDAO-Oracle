@@ -27,9 +27,13 @@ export const config = yargs(process.argv.slice(2))
         // set --config default
         config: {
             type: 'string',
-            default: 'src/config/config-dev.json',
+            default: 'src/config/config-default.json',
             demandOption: false
         },
     })
     .config()
     .argv;
+
+process.on('uncaughtException', function (err) {
+    console.error('uncaughtException', err.message);
+});
