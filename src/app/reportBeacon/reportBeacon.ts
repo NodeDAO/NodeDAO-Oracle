@@ -45,19 +45,16 @@ export async function runReportBeacon() {
         try {
 
             let needReport;
-            isReport().then((r: boolean) => {
+            await isReport().then((r: boolean) => {
                 needReport = r;
             })
-
             if (!needReport) {
                 await sleep(REPORT_SLEEP_FREQUENCY);
                 continue;
             }
-
             await reportBeacon().then().catch((e => {
                 logger.error("[reportBeacon error] OracleMember address:%s", currentOracleMember, e);
             }));
-
             await sleep(REPORT_SLEEP_FREQUENCY);
         } catch (err) {
             switch (true) {
@@ -98,6 +95,7 @@ async function isReport(): Promise<boolean> {
         logger.debug("OracleMember address:%s  isReportedBeacon:%s", currentOracleMember, isReportedBeacon);
         return false;
     }
+
     return true;
 }
 
@@ -107,8 +105,10 @@ async function reportBeacon() {
     await buildReportBeacon().then(r => {
         reportBeaconRes = r;
     }).catch(e => {
-        console.log(e)
-        logger.error("buildReportBeacon error.reportBeaconRes:", reportBeaconRes, e)
+        logger.error("buildReportBeacon error. reportBeaconRes:", reportBeaconRes, e)
+        if (e instanceof ServiceException) {
+            throw new ServiceException(e.code, e.message);
+        }
     })
 
     logger.debug("reportBeaconRes:", reportBeaconRes)
@@ -193,7 +193,12 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
             validators++;
         }
     }
+    if (kinghashValidators.length == 0) {
+        throw new ServiceException("VALIDATOR_NOT_FOUND", "validator count is zero.")
+    }
+
     sortDesc(kinghashValidators);
+
     const tree = toMerkleTree(kinghashValidators);
 
     reportBeaconRes.epochId = expectEpochId;
