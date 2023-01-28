@@ -72,15 +72,15 @@ export async function runReportBeacon() {
 }
 
 async function isReport(): Promise<boolean> {
-    // Whether the frame reaches quorum this time
-    let isQuorum;
-    await oracleContract.isQuorum().then((q: boolean) => {
-        isQuorum = q;
+    // Whether the current frame should be reported
+    let isCurrentFrame;
+    await oracleContract.isCurrentFrame().then((q: boolean) => {
+        isCurrentFrame = q;
     }).catch((e => {
-        logger.error("[reportBeacon error for isQuorum] err:%s", e);
+        logger.error("[reportBeacon error for isCurrentFrame] err:%s", e);
     }));
-    if (isQuorum) {
-        logger.debug("isQuorum:%s", isQuorum);
+    if (!isCurrentFrame) {
+        logger.debug("isCurrentFrame:%s", isCurrentFrame);
         return false;
     }
 

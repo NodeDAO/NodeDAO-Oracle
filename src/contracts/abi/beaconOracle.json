@@ -192,31 +192,6 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "epochId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "isQuorum",
-        "type": "bool"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "quorum",
-        "type": "uint32"
-      }
-    ],
-    "name": "achieveQuorum",
-    "type": "event"
-  },
-  {
     "inputs": [],
     "name": "GENESIS_TIME",
     "outputs": [
@@ -348,6 +323,19 @@
   },
   {
     "inputs": [],
+    "name": "getCurrentEpochId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getQuorum",
     "outputs": [
       {
@@ -373,14 +361,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_oracleMember",
-        "type": "address"
-      }
-    ],
-    "name": "isOracleMember",
+    "inputs": [],
+    "name": "isCurrentFrame",
     "outputs": [
       {
         "internalType": "bool",
@@ -392,8 +374,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "isQuorum",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_oracleMember",
+        "type": "address"
+      }
+    ],
+    "name": "isOracleMember",
     "outputs": [
       {
         "internalType": "bool",
