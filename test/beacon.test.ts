@@ -52,6 +52,6 @@ describe("beacon validator info", () => {
     });
 
     test("slot", () => {
-        console.log(ethers.BigNumber.from(1478907).toString());
+        console.log(ethers.BigNumber.from(152100).toString());
     });
 });

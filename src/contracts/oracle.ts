@@ -8,8 +8,8 @@ import {config} from "../config/config";
 import beaconOracleAbi from './abi/beaconOracle.json';
 import vNFTAbi from './abi/vNFT.json';
 
-const BEACON_ORACLE_CONTRACT_ADDR = "0xafCB746451ca2601cF809BA14dd6afE899dbFC17";
-const VNFT_CONTRACT_ADDR = "0x7691c4051b3B7c149D938D1Bb8758eA155c0991E";
+const BEACON_ORACLE_CONTRACT_ADDR = "0x91a5eB89694957622843C6B0cfF618e35A672E44";
+const VNFT_CONTRACT_ADDR = "0xA55506acca8f2A655436CB140962269AB87d3370";
 
 const executionLayerAddr = config.executionLayerAddr;
 const provider = new ethers.providers.JsonRpcProvider(executionLayerAddr);

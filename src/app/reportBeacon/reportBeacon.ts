@@ -111,8 +111,6 @@ async function reportBeacon() {
         }
     })
 
-    logger.debug("reportBeaconRes:", reportBeaconRes)
-
     // oracle reportBeacon
     await oracleContract.reportBeacon(reportBeaconRes.epochId, reportBeaconRes.beaconBalance, reportBeaconRes.beaconValidators, reportBeaconRes.validatorRankingRoot).then(() => {
         logger.info("[reportBeacon success] OracleMember address:%s  ReportedBeacon res:%s", currentOracleMember, reportBeaconRes.toString());
@@ -121,7 +119,7 @@ async function reportBeacon() {
     }));
 }
 
-async function buildReportBeacon(): Promise<ReportBeacon> {
+export async function buildReportBeacon(): Promise<ReportBeacon> {
     // Obtain the expectEpochId of the contract
     let expectEpochId: ethers.BigNumber = ethers.BigNumber.from("0");
     await oracleContract.getExpectedEpochId().then((epoch: ethers.BigNumber) => {
@@ -132,7 +130,6 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
     }));
 
     let slot = toSlot(expectEpochId).toString();
-    console.log(slot)
 
     // Request the Smart contract to get all the pubkeys
     let pubkeys: string[] = [];
@@ -180,7 +177,7 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
                 throw new ServiceException("BEACON_REQUEST_ERROR", "Request beacon chain exception");
             }
         }
-        beaconBalance.add(partRes.beaconBalance);
+        beaconBalance = beaconBalance.add(partRes.beaconBalance);
         validators += partRes.beaconValidators;
     }
     kinghashValidators = Array.from(validatorMap.values());
@@ -189,7 +186,7 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
         if (kinghashValidator.validatorBalance === 0) {
             // Process data that is not in the beacon chain
             kinghashValidator.validatorBalance = 32 * 1e18;
-            beaconBalance.add(ethers.BigNumber.from(kinghashValidator.validatorBalance.toString()));
+            beaconBalance = beaconBalance.add(ethers.BigNumber.from(kinghashValidator.validatorBalance.toString()));
             validators++;
         }
     }
@@ -205,6 +202,8 @@ async function buildReportBeacon(): Promise<ReportBeacon> {
     reportBeaconRes.validatorRankingRoot = tree.root;
     reportBeaconRes.beaconBalance = beaconBalance;
     reportBeaconRes.beaconValidators = validators;
+
+    logger.debug("reportBeaconRes:", reportBeaconRes)
 
     return reportBeaconRes;
 }
@@ -232,7 +231,7 @@ async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | s
                         let kinghashValidator = validatorMap.get(balanceInfo.validator.pubkey) as KinghashValidator;
                         // gwei conversion to wei
                         kinghashValidator.validatorBalance = balanceInfo.balance * GWEI;
-                        balance.add(kinghashValidator.validatorBalance.toString());
+                        balance = balance.add(kinghashValidator.validatorBalance.toString());
                         validators++;
                         validatorMap.set(balanceInfo.validator.pubkey, kinghashValidator);
                     }

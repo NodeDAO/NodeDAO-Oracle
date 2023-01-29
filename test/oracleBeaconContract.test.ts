@@ -4,7 +4,7 @@
  * Date: 2023/1/14 15:32
  **/
 import {ethers} from 'ethers'
-import {describe, jest, test} from '@jest/globals'
+import {describe, expect, jest, test} from '@jest/globals'
 import * as oracleContract from '../src/contracts/oracle'
 
 describe("oracleBeaconContract test", () => {
@@ -19,9 +19,9 @@ describe("oracleBeaconContract test", () => {
 
     });
 
-    test("isQuorum", async () => {
-        await oracleContract.isQuorum().then((isQuorum: boolean) => {
-            console.log(isQuorum);
+    test("isCurrentFrame", async () => {
+        await oracleContract.isCurrentFrame().then((isCurrentFrame: boolean) => {
+            console.log(isCurrentFrame);
         })
     });
 
@@ -80,6 +80,13 @@ describe("ethers.js", () => {
 
         let d = b.add(b);
         console.log(d.toString());
+    });
+
+    test("BigNumber add", async () => {
+        let beaconBalance = ethers.BigNumber.from("0");
+        const n = 32 * 1e18;
+        beaconBalance = beaconBalance.add(ethers.BigNumber.from(n.toString()));
+        expect(beaconBalance).toStrictEqual(ethers.BigNumber.from(n.toString()));
     });
 
 
