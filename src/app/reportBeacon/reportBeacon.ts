@@ -20,10 +20,10 @@ import {StandardMerkleTree} from '@openzeppelin/merkle-tree'
 export class ReportBeacon {
     epochId: ethers.BigNumber;
     beaconBalance: ethers.BigNumber;
-    beaconValidators: number;
+    beaconValidators: ethers.BigNumber;
     validatorRankingRoot: string;
 
-    constructor(epochId: ethers.BigNumber, beaconBalance: ethers.BigNumber, beaconValidators: number, validatorRankingRoot: string) {
+    constructor(epochId: ethers.BigNumber, beaconBalance: ethers.BigNumber, beaconValidators: ethers.BigNumber, validatorRankingRoot: string) {
         this.epochId = epochId;
         this.beaconBalance = beaconBalance;
         this.beaconValidators = beaconValidators;
@@ -31,7 +31,7 @@ export class ReportBeacon {
     }
 
     toString(): string {
-        return `ReportBeacon { epochId: ${this.epochId.toString()}, beaconBalance: ${this.beaconBalance.toString()}, beaconValidators: ${this.beaconValidators}, validatorRankingRoot: ${this.validatorRankingRoot} }`;
+        return `ReportBeacon { epochId: ${this.epochId.toString()}, beaconBalance: ${this.beaconBalance.toString()}, beaconValidators: ${this.beaconValidators.toString()}, validatorRankingRoot: ${this.validatorRankingRoot} }`;
     }
 }
 
@@ -101,7 +101,7 @@ async function isReport(): Promise<boolean> {
 }
 
 async function reportBeacon() {
-    let reportBeaconRes: ReportBeacon = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
+    let reportBeaconRes: ReportBeacon = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), "");
 
     await buildReportBeacon().then(r => {
         reportBeaconRes = r;
@@ -116,7 +116,7 @@ async function reportBeacon() {
     await oracleContract.reportBeacon(reportBeaconRes.epochId, reportBeaconRes.beaconBalance, reportBeaconRes.beaconValidators, reportBeaconRes.validatorRankingRoot).then(() => {
         logger.info("[reportBeacon success] OracleMember address:%s  ReportedBeacon res:%s", currentOracleMember, reportBeaconRes.toString());
     }).catch((e => {
-        logger.info("[reportBeacon error] OracleMember address:%s  ReportedBeacon res:%s error:", currentOracleMember, reportBeaconRes.toString(), e);
+        logger.error("[reportBeacon error] OracleMember address:%s  ReportedBeacon res:%s error:", currentOracleMember, reportBeaconRes.toString(), e);
     }));
 }
 
@@ -130,7 +130,7 @@ export async function buildReportBeacon(): Promise<ReportBeacon> {
         logger.error("[reportBeacon error for getExpectedEpochId] err:%s", e);
     }));
 
-    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
+    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), "");
 
     await buildReportBeaconAndMerkleTree(expectEpochId).then((r) => {
         reportBeaconRes = r.reportBeaconRes;
@@ -145,7 +145,7 @@ export async function buildReportBeacon(): Promise<ReportBeacon> {
 
 export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNumber): Promise<{ reportBeaconRes: ReportBeacon; tree: StandardMerkleTree<string[]> }> {
     let kinghashValidators: KinghashValidator[] = [];
-    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
+    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), "");
 
     let slot = toSlot(expectEpochId).toString();
 
@@ -176,11 +176,11 @@ export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNu
         validatorMap.set(pubkey, new KinghashValidator(pubkey, 0, tokenId));
     }
     let beaconBalance = ethers.BigNumber.from("0");
-    let validators = 0;
+    let validators = ethers.BigNumber.from("0");
     // Split the array,1000 of them into a set of beacon chains to get data
     let splitPubkeys = splitIntoGroups(pubkeys, 1000);
     for (let partPubkeys of splitPubkeys) {
-        let partRes = {beaconBalance: ethers.BigNumber.from("0"), beaconValidators: 0};
+        let partRes = {beaconBalance: ethers.BigNumber.from("0"), beaconValidators: ethers.BigNumber.from("0")};
         try {
             await getBalanceRetry(partPubkeys, slot, validatorMap).then(r => {
                 partRes = r;
@@ -193,7 +193,7 @@ export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNu
             }
         }
         beaconBalance = beaconBalance.add(partRes.beaconBalance);
-        validators += partRes.beaconValidators;
+        validators = validators.add(partRes.beaconValidators);
     }
     kinghashValidators = Array.from(validatorMap.values());
 
@@ -202,7 +202,7 @@ export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNu
             // Process data that is not in the beacon chain
             kinghashValidator.validatorBalance = 32 * 1e18;
             beaconBalance = beaconBalance.add(ethers.BigNumber.from(kinghashValidator.validatorBalance.toString()));
-            validators++;
+            validators = validators.add(1);
         }
     }
     if (kinghashValidators.length == 0) {
@@ -221,10 +221,10 @@ export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNu
     return {reportBeaconRes: reportBeaconRes, tree: tree}
 }
 
-async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string, validatorMap: Map<string, KinghashValidator>): Promise<{ beaconBalance: ethers.BigNumber; beaconValidators: number }> {
+async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string, validatorMap: Map<string, KinghashValidator>): Promise<{ beaconBalance: ethers.BigNumber; beaconValidators: ethers.BigNumber }> {
     let isFinsh = false;
     let balance = ethers.BigNumber.from("0");
-    let validators = 0;
+    let validators = ethers.BigNumber.from("0");
 
     // Handle the failure three times
     for (let i = 0; i < 3; i++) {
@@ -244,7 +244,7 @@ async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | s
                         // gwei conversion to wei
                         kinghashValidator.validatorBalance = balanceInfo.balance * GWEI;
                         balance = balance.add(kinghashValidator.validatorBalance.toString());
-                        validators++;
+                        validators = validators.add(1);
                         validatorMap.set(balanceInfo.validator.pubkey, kinghashValidator);
                     }
                 }

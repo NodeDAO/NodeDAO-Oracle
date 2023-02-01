@@ -14,7 +14,7 @@ describe("reportBeacon", () => {
     jest.setTimeout(500000);
 
     test("buildReportBeacon", async () => {
-        let reportBeaconRes: ReportBeacon = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
+        let reportBeaconRes: ReportBeacon = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), "");
 
         await buildReportBeacon().then(r => {
             reportBeaconRes = r;

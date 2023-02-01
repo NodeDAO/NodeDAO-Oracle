@@ -8,7 +8,7 @@ import {config} from "../config/config";
 import beaconOracleAbi from './abi/beaconOracle.json';
 import vNFTAbi from './abi/vNFT.json';
 
-const BEACON_ORACLE_CONTRACT_ADDR = "0x91a5eB89694957622843C6B0cfF618e35A672E44";
+const BEACON_ORACLE_CONTRACT_ADDR = "0xBF3d15A9013025a8de139F7ED53ccf18C77021Fd";
 const VNFT_CONTRACT_ADDR = "0xA55506acca8f2A655436CB140962269AB87d3370";
 
 const executionLayerAddr = config.executionLayerAddr;
@@ -42,7 +42,7 @@ export function isReportBeacon(oracleMember: string): Promise<boolean> {
 export function reportBeacon(
     epochId: ethers.BigNumber,
     beaconBalance: ethers.BigNumber,
-    beaconValidators: number,
+    beaconValidators: ethers.BigNumber,
     validatorRankingRoot: string
 ): Promise<void> {
     return oracleContract.reportBeacon(epochId, beaconBalance, beaconValidators, validatorRankingRoot);
