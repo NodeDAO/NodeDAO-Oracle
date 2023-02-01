@@ -45,6 +45,5 @@ export function sortDesc(kinghashValidators: KinghashValidator[]) {
  */
 export function toMerkleTree(sortedKinghashValidators: KinghashValidator[]): StandardMerkleTree<string[]> {
     let arr = build2DArray(sortedKinghashValidators);
-    return StandardMerkleTree.of(arr, ["bytes", "uint128", "uint256"]);
+    return StandardMerkleTree.of(arr, ["bytes", "uint256", "uint256"]);
 }
-
