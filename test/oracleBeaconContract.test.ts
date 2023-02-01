@@ -6,6 +6,7 @@
 import {ethers} from 'ethers'
 import {describe, expect, jest, test} from '@jest/globals'
 import * as oracleContract from '../src/contracts/oracle'
+import {sleep} from '../src/lib/utils/sleep'
 
 describe("oracleBeaconContract test", () => {
     jest.setTimeout(30000);
@@ -89,5 +90,24 @@ describe("ethers.js", () => {
         expect(beaconBalance).toStrictEqual(ethers.BigNumber.from(n.toString()));
     });
 
+
+});
+
+
+describe("beacon event", () => {
+    jest.setTimeout(500000);
+
+    test("ReportBeacon", async () => {
+        oracleContract.getOracleContract().on("ReportBeacon", (epochId, sameReportCount, quorum) => {
+            console.log("ReportBeacon Event:", epochId, sameReportCount, quorum);
+        });
+    });
+
+    test("AddOracleMember", async () => {
+        oracleContract.getOracleContract().on("AddOracleMember", (oracleMember) => {
+            console.log("AddOracleMember Event:", oracleMember);
+        });
+        await sleep(1000 * 60 * 10);
+    });
 
 });
