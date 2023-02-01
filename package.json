@@ -44,7 +44,7 @@
     "web3": "^1.8.1"
   },
   "dependencies": {
-    "@openzeppelin/merkle-tree": "^1.0.1",
+    "@openzeppelin/merkle-tree": "^1.0.2",
     "@types/jest": "^29.2.4",
     "assert": "^2.0.0",
     "axios": "^1.2.2",

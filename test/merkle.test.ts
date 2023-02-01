@@ -62,8 +62,6 @@ describe("openzeppelin/merkle-tree test", () => {
 
     const tree = StandardMerkleTree.of(values, ["address", "uint256"]);
 
-    console.log("Merkle Root:", tree.root);
-
     test("merkle object root", () => {
         expect(tree.root).toBe(
             "0xd4dee0beab2d53f2cc83e567171bd2820e49898130a22622b10ead383e90bd77"
@@ -111,9 +109,6 @@ describe("openzeppelin/merkle-tree test object", () => {
     ];
 
     const tree = StandardMerkleTree.of(vs, ["bytes", "uint128", "uint32"]);
-    // const tree = StandardMerkleTree.of(vs, ["bytes", "uint256", "uint256"]);
-
-    console.log("Merkle Root:", tree.root);
 
     test("merkle object root", () => {
         expect(tree.root).toBe(
@@ -141,4 +136,9 @@ describe("openzeppelin/merkle-tree test object", () => {
         ]);
         console.log("leafHash:", leafHash);
     });
+
+    test("merkle dump", () => {
+        console.log(JSON.stringify(tree.dump()));
+    });
+
 });
