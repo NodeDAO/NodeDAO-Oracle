@@ -15,6 +15,7 @@ import {logger} from "../../lib/log/log";
 import {sleep} from '../../lib/utils/sleep'
 import {ServiceException} from '../../lib/error/serviceException';
 import {ContractException} from '../../lib/error/contractException';
+import {StandardMerkleTree} from '@openzeppelin/merkle-tree'
 
 export class ReportBeacon {
     epochId: ethers.BigNumber;
@@ -129,6 +130,23 @@ export async function buildReportBeacon(): Promise<ReportBeacon> {
         logger.error("[reportBeacon error for getExpectedEpochId] err:%s", e);
     }));
 
+    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
+
+    await buildReportBeaconAndMerkleTree(expectEpochId).then((r) => {
+        reportBeaconRes = r.reportBeaconRes;
+    }).catch((e => {
+        logger.error("[reportBeacon error] err:%s", e);
+    }));
+
+    logger.debug("reportBeaconRes:", reportBeaconRes);
+
+    return reportBeaconRes;
+}
+
+export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNumber): Promise<{ reportBeaconRes: ReportBeacon; tree: StandardMerkleTree<string[]> }> {
+    let kinghashValidators: KinghashValidator[] = [];
+    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
+
     let slot = toSlot(expectEpochId).toString();
 
     // Request the Smart contract to get all the pubkeys
@@ -144,9 +162,6 @@ export async function buildReportBeacon(): Promise<ReportBeacon> {
     pubkeys = pubkeys.filter(pubkey => pubkey !== "0x");
 
     logger.debug("[buildReportBeacon] expectEpochId:%i contract pubkey count:%i. invalid pubkeys('0x') count:%i. effective pubkey count:%i", expectEpochId, pubkeyOriginLen, pubkeyOriginLen - pubkeys.length, pubkeys.length);
-
-    let kinghashValidators: KinghashValidator[] = [];
-    let reportBeaconRes = new ReportBeacon(ethers.BigNumber.from("0"), ethers.BigNumber.from("0"), 0, "");
 
     // Construct map data to facilitate subsequent calculation
     let validatorMap = new Map<string, KinghashValidator>();
@@ -203,11 +218,8 @@ export async function buildReportBeacon(): Promise<ReportBeacon> {
     reportBeaconRes.beaconBalance = beaconBalance;
     reportBeaconRes.beaconValidators = validators;
 
-    logger.debug("reportBeaconRes:", reportBeaconRes)
-
-    return reportBeaconRes;
+    return {reportBeaconRes: reportBeaconRes, tree: tree}
 }
-
 
 async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string, validatorMap: Map<string, KinghashValidator>): Promise<{ beaconBalance: ethers.BigNumber; beaconValidators: number }> {
     let isFinsh = false;
