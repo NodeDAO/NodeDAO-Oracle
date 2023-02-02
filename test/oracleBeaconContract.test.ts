@@ -40,7 +40,7 @@ describe("oracleBeaconContract test", () => {
             epochId = epoch;
         })
         const beaconBalance = ethers.BigNumber.from(ethers.utils.parseEther("66.43"));
-        const beaconValidators = 2;
+        const beaconValidators = ethers.BigNumber.from(ethers.utils.parseEther("2"));
         const validatorRankingRoot = "0x58d40378452cab5f3f177e4a36e706087da75f9a745e076b93959d25883efce7";
 
         await oracleContract.reportBeacon(epochId, beaconBalance, beaconValidators, validatorRankingRoot).then((res: any) => {
@@ -48,6 +48,13 @@ describe("oracleBeaconContract test", () => {
         })
 
     }, 30000);
+
+    test("getMerkleRoot", async () => {
+        // const oracleMemberAddress = "0xe583DC38863aB4b5A94da77A6628e2119eaD4B18";
+        await oracleContract.getMerkleRoot().then((root) => {
+            console.log(root);
+        })
+    });
 
 });
 

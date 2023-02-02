@@ -8,7 +8,7 @@ import {config} from "../config/config";
 import beaconOracleAbi from './abi/beaconOracle.json';
 import vNFTAbi from './abi/vNFT.json';
 
-const BEACON_ORACLE_CONTRACT_ADDR = "0xBF3d15A9013025a8de139F7ED53ccf18C77021Fd";
+const BEACON_ORACLE_CONTRACT_ADDR = "0x21d8211d78a946880f7Bce5c25E3c0Bc64F52f14";
 const VNFT_CONTRACT_ADDR = "0xA55506acca8f2A655436CB140962269AB87d3370";
 
 const executionLayerAddr = config.executionLayerAddr;
@@ -46,6 +46,10 @@ export function reportBeacon(
     validatorRankingRoot: string
 ): Promise<void> {
     return oracleContract.reportBeacon(epochId, beaconBalance, beaconValidators, validatorRankingRoot);
+}
+
+export function getMerkleRoot(): Promise<string> {
+    return oracleContract.merkleTreeRoot();
 }
 
 //------------------------------ vNFT ----------------------------------
