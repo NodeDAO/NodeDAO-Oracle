@@ -18,6 +18,7 @@ import {describe, jest, test} from "@jest/globals";
 import {getAsyncValidatorsBySlot} from "../src/api/beacon";
 import {config} from "../src/config/config";
 import {ethers} from 'ethers'
+import {toSlot} from '../src/lib/beacon/epoch'
 
 describe("beacon validator info", () => {
     jest.setTimeout(30000);
@@ -52,6 +53,6 @@ describe("beacon validator info", () => {
     });
 
     test("slot", () => {
-        console.log(ethers.BigNumber.from(152100).toString());
+        console.log(toSlot(ethers.BigNumber.from(153000)).toString());
     });
 });
