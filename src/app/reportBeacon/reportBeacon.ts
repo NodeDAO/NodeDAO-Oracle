@@ -42,6 +42,8 @@ const currentOracleMember = oracleContract.oracleMemberAddress;
 
 export async function runReportBeacon() {
     logger.debug("report beacon server start...");
+    reportSuccessEvent();
+    
     while (true) {
         try {
 
@@ -260,4 +262,10 @@ async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | s
     }
 
     return {beaconBalance: balance, beaconValidators: validators};
+}
+
+export function reportSuccessEvent() {
+    oracleContract.getOracleContract().on("ReportSuccess", (epochId, sameReportCount, quorum, beaconBalance, beaconValidators, validatorRankingRoot) => {
+        logger.info("ReportSuccess Event epochId:%i sameReportCount:%i quorum:%i beaconBalance:%i beaconValidators:%i validatorRankingRoot:%s", epochId, sameReportCount, quorum, beaconBalance, beaconValidators, validatorRankingRoot);
+    });
 }
