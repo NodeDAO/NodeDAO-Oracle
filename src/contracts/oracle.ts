@@ -31,6 +31,14 @@ export function getExpectedEpochId(): Promise<ethers.BigNumber> {
     return oracleContract.expectedEpochId();
 }
 
+export function getEpochsPerFrame(): Promise<ethers.BigNumber> {
+    return oracleContract.epochsPerFrame();
+}
+
+export function getCurrentEpochId(): Promise<ethers.BigNumber> {
+    return oracleContract.getCurrentEpochId();
+}
+
 export function isCurrentFrame(): Promise<boolean> {
     return oracleContract.isCurrentFrame();
 }

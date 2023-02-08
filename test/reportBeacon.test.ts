@@ -9,6 +9,7 @@ import {logger} from '../src/lib/log/log'
 import {
     buildReportBeacon,
     buildReportBeaconAndMerkleTree,
+    dealExpectedEpochId,
     ReportBeacon,
     reportSuccessEvent,
     runReportBeacon
@@ -67,5 +68,18 @@ describe("reportBeacon test", () => {
         logger.info("end.. ")
     });
 
+    test("dealExpectedEpochId", async () => {
+        logger.info("start.. ")
+        let expectEpochId: ethers.BigNumber = ethers.BigNumber.from("0");
+        await dealExpectedEpochId().then((epoch: ethers.BigNumber) => {
+            expectEpochId = epoch;
+            logger.debug("report expectEpochId:%i", expectEpochId);
+        }).catch((e => {
+            logger.error("[reportBeacon error for getExpectedEpochId] err:%s", e);
+        }));
+
+        console.log(expectEpochId.toString());
+        logger.info("end.. ")
+    });
 
 });

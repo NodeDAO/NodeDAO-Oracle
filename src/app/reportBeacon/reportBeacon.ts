@@ -43,7 +43,7 @@ const currentOracleMember = oracleContract.oracleMemberAddress;
 export async function runReportBeacon() {
     logger.debug("report beacon server start...");
     reportSuccessEvent();
-    
+
     while (true) {
         try {
 
@@ -123,11 +123,10 @@ async function reportBeacon() {
 }
 
 export async function buildReportBeacon(): Promise<ReportBeacon> {
-    // Obtain the expectEpochId of the contract
     let expectEpochId: ethers.BigNumber = ethers.BigNumber.from("0");
-    await oracleContract.getExpectedEpochId().then((epoch: ethers.BigNumber) => {
+    await dealExpectedEpochId().then((epoch: ethers.BigNumber) => {
         expectEpochId = epoch;
-        logger.debug("expectEpochId:%i", expectEpochId);
+        logger.debug("report expectEpochId:%i", expectEpochId);
     }).catch((e => {
         logger.error("[reportBeacon error for getExpectedEpochId] err:%s", e);
     }));
@@ -221,6 +220,39 @@ export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNu
     reportBeaconRes.beaconValidators = validators;
 
     return {reportBeaconRes: reportBeaconRes, tree: tree}
+}
+
+export async function dealExpectedEpochId(): Promise<ethers.BigNumber> {
+    // Obtain the expectEpochId of the contract
+    let expectEpochId: ethers.BigNumber = ethers.BigNumber.from("0");
+    await oracleContract.getExpectedEpochId().then((epoch: ethers.BigNumber) => {
+        expectEpochId = epoch;
+        logger.debug("contracts expectEpochId:%i", expectEpochId);
+    }).catch((e => {
+        logger.error("[reportBeacon error for get contracts ExpectedEpochId] err:%s", e);
+    }));
+
+    let curEpoch: ethers.BigNumber = ethers.BigNumber.from("0");
+    await oracleContract.getCurrentEpochId().then((epoch: ethers.BigNumber) => {
+        curEpoch = epoch;
+        logger.debug("contracts curEpoch:%i", expectEpochId);
+    }).catch((e => {
+        logger.error("[reportBeacon error for get contracts curEpoch] err:%s", e);
+    }));
+
+    let frame: ethers.BigNumber = ethers.BigNumber.from("0");
+    await oracleContract.getEpochsPerFrame().then((f: ethers.BigNumber) => {
+        frame = f;
+        logger.debug("contracts frame:%i", expectEpochId);
+    }).catch((e => {
+        logger.error("[reportBeacon error for get contracts frame] err:%s", e);
+    }));
+
+    let y = (curEpoch.sub(expectEpochId)).mod(frame);
+
+    expectEpochId = curEpoch.sub(y)
+
+    return expectEpochId;
 }
 
 async function getBalanceRetry(partPubkeys: string[], slot: ethers.BigNumber | string, validatorMap: Map<string, KinghashValidator>): Promise<{ beaconBalance: ethers.BigNumber; beaconValidators: ethers.BigNumber }> {
