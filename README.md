@@ -8,7 +8,7 @@ Made by:  [kinghash](https://www.kinghash.com/)
 
 Oracle daemon for NodeDAO decentralized staking service. Collects and reports Beacon Chain states (the number of visible validators and their summarized balances) to the NodeDAO dApp contract running on Ethereum execution layer.
 
-For oracle contracts, see: [King-Hash-Org/NodeDAO-Protocol](https://github.com/King-Hash-Org/NodeDAO-Protocol)
+For oracle contracts, see: [NodeDAO/NodeDAO-Protocol](https://github.com/NodeDAO/NodeDAO-Protocol)
 
 
 
