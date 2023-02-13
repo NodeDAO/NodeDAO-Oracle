@@ -235,7 +235,7 @@ export async function dealExpectedEpochId(): Promise<ethers.BigNumber> {
     let curEpoch: ethers.BigNumber = ethers.BigNumber.from("0");
     await oracleContract.getCurrentEpochId().then((epoch: ethers.BigNumber) => {
         curEpoch = epoch;
-        logger.debug("contracts curEpoch:%i", expectEpochId);
+        logger.debug("contracts curEpoch:%i", curEpoch);
     }).catch((e => {
         logger.error("[reportBeacon error for get contracts curEpoch] err:%s", e);
     }));
@@ -243,7 +243,7 @@ export async function dealExpectedEpochId(): Promise<ethers.BigNumber> {
     let frame: ethers.BigNumber = ethers.BigNumber.from("0");
     await oracleContract.getEpochsPerFrame().then((f: ethers.BigNumber) => {
         frame = f;
-        logger.debug("contracts frame:%i", expectEpochId);
+        logger.debug("contracts frame:%i", frame);
     }).catch((e => {
         logger.error("[reportBeacon error for get contracts frame] err:%s", e);
     }));
