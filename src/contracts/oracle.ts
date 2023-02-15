@@ -8,7 +8,7 @@ import {config} from "../config/config";
 import beaconOracleAbi from './abi/beaconOracle.json';
 import vNFTAbi from './abi/vNFT.json';
 
-const BEACON_ORACLE_CONTRACT_ADDR = "0xa5c6C39244875Ef0ad0a06B768Cf8144F640D9BA";
+const BEACON_ORACLE_CONTRACT_ADDR = "0x21D583156A626F062e091c1B8664e5F68BA27B93";
 const VNFT_CONTRACT_ADDR = "0x4f7D3fb0ff08fcC38fcdbADd73bAc8F43e45582B";
 
 const executionLayerAddr = config.executionLayerAddr;

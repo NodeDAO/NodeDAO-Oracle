@@ -5,7 +5,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_oracleMember",
+        "name": "oracleMember",
         "type": "address"
       }
     ],
@@ -49,27 +49,8 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "_oldDao",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_dao",
-        "type": "address"
-      }
-    ],
-    "name": "DaoAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "_expectedEpochId",
+        "name": "expectedEpochId",
         "type": "uint256"
       }
     ],
@@ -133,13 +114,13 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_addBalance",
+        "name": "addBalance",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_totalBalance",
+        "name": "totalBalance",
         "type": "uint256"
       }
     ],
@@ -152,7 +133,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_totalBalance",
+        "name": "totalBalance",
         "type": "uint256"
       }
     ],
@@ -165,7 +146,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_oracleMember",
+        "name": "oracleMember",
         "type": "address"
       }
     ],
@@ -178,19 +159,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_pochId",
+        "name": "epochId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_oracleMember",
+        "name": "oracleMember",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint32",
-        "name": "_sameReportCount",
+        "name": "sameReportCount",
         "type": "uint32"
       },
       {
@@ -221,19 +202,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_epochId",
+        "name": "epochId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_sameReportCount",
+        "name": "sameReportCount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint32",
-        "name": "_quorum",
+        "name": "quorum",
         "type": "uint32"
       },
       {
@@ -264,7 +245,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_epochsPerFrame",
+        "name": "epochsPerFrame",
         "type": "uint256"
       }
     ],
@@ -277,7 +258,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_expectedEpochId",
+        "name": "expectedEpochId",
         "type": "uint256"
       }
     ],
@@ -575,7 +556,7 @@
   },
   {
     "inputs": [],
-    "name": "liquidStakingContractAddress",
+    "name": "liquidStakingContract",
     "outputs": [
       {
         "internalType": "address",
@@ -729,7 +710,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_liquidStakingContractAddress",
+        "name": "_liqStakingAddress",
         "type": "address"
       }
     ],
