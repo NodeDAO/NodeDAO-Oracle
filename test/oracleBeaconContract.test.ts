@@ -17,7 +17,12 @@ describe("oracleBeaconContract test", () => {
         await oracleContract.getExpectedEpochId().then((epoch: ethers.BigNumber) => {
             console.log("epoch:%i", epoch);
         })
+    });
 
+    test("getFirstOfFrameEpochId", async () => {
+        await oracleContract.getFirstOfFrameEpochId(ethers.BigNumber.from("156052")).then((epoch: ethers.BigNumber) => {
+            console.log("epoch:%i", epoch);
+        })
     });
 
     test("isCurrentFrame", async () => {

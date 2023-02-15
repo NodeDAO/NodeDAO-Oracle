@@ -222,15 +222,10 @@ export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNu
     return {reportBeaconRes: reportBeaconRes, tree: tree}
 }
 
+
 export async function dealExpectedEpochId(): Promise<ethers.BigNumber> {
     // Obtain the expectEpochId of the contract
     let expectEpochId: ethers.BigNumber = ethers.BigNumber.from("0");
-    await oracleContract.getExpectedEpochId().then((epoch: ethers.BigNumber) => {
-        expectEpochId = epoch;
-        logger.debug("contracts expectEpochId:%i", expectEpochId);
-    }).catch((e => {
-        logger.error("[reportBeacon error for get contracts ExpectedEpochId] err:%s", e);
-    }));
 
     let curEpoch: ethers.BigNumber = ethers.BigNumber.from("0");
     await oracleContract.getCurrentEpochId().then((epoch: ethers.BigNumber) => {
@@ -238,6 +233,14 @@ export async function dealExpectedEpochId(): Promise<ethers.BigNumber> {
         logger.debug("contracts curEpoch:%i", curEpoch);
     }).catch((e => {
         logger.error("[reportBeacon error for get contracts curEpoch] err:%s", e);
+    }));
+
+    let firstOfFrameEpochId: ethers.BigNumber = ethers.BigNumber.from("0");
+    await oracleContract.getFirstOfFrameEpochId(curEpoch).then((epoch: ethers.BigNumber) => {
+        firstOfFrameEpochId = epoch;
+        logger.debug("contracts expectEpochId:%i", firstOfFrameEpochId);
+    }).catch((e => {
+        logger.error("[reportBeacon error for get contracts firstOfFrameEpochId] err:%s", e);
     }));
 
     let frame: ethers.BigNumber = ethers.BigNumber.from("0");
@@ -248,9 +251,13 @@ export async function dealExpectedEpochId(): Promise<ethers.BigNumber> {
         logger.error("[reportBeacon error for get contracts frame] err:%s", e);
     }));
 
-    let y = (curEpoch.sub(expectEpochId)).mod(frame);
+    let calculateFirstFrameEpochId = curEpoch.div(frame).mul(frame);
 
-    expectEpochId = curEpoch.sub(y)
+    if (calculateFirstFrameEpochId.gt(firstOfFrameEpochId)) {
+        expectEpochId = firstOfFrameEpochId;
+    } else {
+        expectEpochId = calculateFirstFrameEpochId;
+    }
 
     return expectEpochId;
 }
