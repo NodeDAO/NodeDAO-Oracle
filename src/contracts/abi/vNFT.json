@@ -239,7 +239,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -252,7 +252,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -494,10 +494,23 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getEmptyNftCounts",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "operatorId",
+        "name": "_operatorId",
         "type": "uint256"
       }
     ],
@@ -516,7 +529,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -542,12 +555,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "_owner",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "operator",
+        "name": "_operator",
         "type": "address"
       }
     ],
@@ -566,7 +579,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -602,7 +615,7 @@
   },
   {
     "inputs": [],
-    "name": "liquidStakingContract",
+    "name": "liquidStakingContractAddress",
     "outputs": [
       {
         "internalType": "address",
@@ -630,7 +643,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "_owner",
         "type": "address"
       }
     ],
@@ -692,7 +705,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -851,7 +864,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "baseURI",
+        "name": "_baseURI",
         "type": "string"
       }
     ],
@@ -864,7 +877,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_liqStakingAddress",
+        "name": "_liquidStakingContractAddress",
         "type": "address"
       }
     ],
@@ -909,7 +922,7 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "pubkey",
+        "name": "_pubkey",
         "type": "bytes"
       }
     ],
@@ -1075,7 +1088,7 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "pubkey",
+        "name": "_pubkey",
         "type": "bytes"
       }
     ],
@@ -1094,7 +1107,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
@@ -1161,7 +1174,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "operatorId",
+        "name": "_operatorId",
         "type": "uint256"
       }
     ],
@@ -1180,7 +1193,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "_owner",
         "type": "address"
       }
     ],
@@ -1199,7 +1212,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],

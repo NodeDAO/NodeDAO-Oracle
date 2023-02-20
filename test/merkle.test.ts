@@ -92,19 +92,14 @@ describe("openzeppelin/merkle-tree test object", () => {
     // (1)
     const vs = [
         [
-            "0x80000001677f23a227dfed6f61b132d114be83b8ad0aa5f3c5d1d77e6ee0bf5f73b0af750cc34e8f2dae73c21dc36f4a",
+            "0x92a14b12a4231e94507f969e367f6ee0eaf93a9ba3b82e8ab2598c8e36f3cd932d5a446a528bf3df636ed8bb3d1cfde9",
             "32000000000000000000",
-            "1",
+            "0",
         ],
         [
-            "0x800003d8af8aa481646da46d0d00ed2659a5bb303e0d88edf468abc1259a1f23ccf12eaeaa3f80511cfeaf256904a72a",
+            "0x83d3693fb9da8aed60a5c94c51927158d6e3a4d36fa6982ba2c87f83260329baf08f93d000f9261911420a9c0f0eb022",
             "33000000000000000000",
-            "2",
-        ],
-        [
-            "0x800006d4b1026b6149168b342e6883d48ede9539202cc414448b1b796394440a5401e8d6620e65d7c77654bf1db199b1",
-            "34000000000000000000",
-            "3",
+            "1",
         ],
     ];
 
@@ -112,7 +107,7 @@ describe("openzeppelin/merkle-tree test object", () => {
 
     test("merkle object root", () => {
         expect(tree.root).toBe(
-            "0xa934c462ec150e180a501144c494ec0d63878c1a9caca5b3d409787177c99798"
+            "0x847e7dedeae2fdb5b098c298e3aff134d9cc0a8d61126631f7bfe43b7ba1dfe4"
         );
     });
 
@@ -120,7 +115,7 @@ describe("openzeppelin/merkle-tree test object", () => {
         for (const [i, v] of tree.entries()) {
             if (
                 v[0] ===
-                "0x80000001677f23a227dfed6f61b132d114be83b8ad0aa5f3c5d1d77e6ee0bf5f73b0af750cc34e8f2dae73c21dc36f4a"
+                "0x83d3693fb9da8aed60a5c94c51927158d6e3a4d36fa6982ba2c87f83260329baf08f93d000f9261911420a9c0f0eb022"
             ) {
                 // (3)
                 const proof = tree.getProof(i);
@@ -130,9 +125,9 @@ describe("openzeppelin/merkle-tree test object", () => {
         }
 
         let leafHash = tree.leafHash([
-            "0x80000001677f23a227dfed6f61b132d114be83b8ad0aa5f3c5d1d77e6ee0bf5f73b0af750cc34e8f2dae73c21dc36f4a",
+            "0x92a14b12a4231e94507f969e367f6ee0eaf93a9ba3b82e8ab2598c8e36f3cd932d5a446a528bf3df636ed8bb3d1cfde9",
             "32000000000000000000",
-            "1",
+            "0",
         ]);
         console.log("leafHash:", leafHash);
     });

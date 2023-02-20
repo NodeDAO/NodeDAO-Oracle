@@ -7,19 +7,44 @@ import {ethers} from "ethers";
 import {config} from "../config/config";
 import beaconOracleAbi from './abi/beaconOracle.json';
 import vNFTAbi from './abi/vNFT.json';
-
-const BEACON_ORACLE_CONTRACT_ADDR = "0x21D583156A626F062e091c1B8664e5F68BA27B93";
-const VNFT_CONTRACT_ADDR = "0x4f7D3fb0ff08fcC38fcdbADd73bAc8F43e45582B";
+import {ETH_GOERLI, ETH_MAINNET} from '../lib/constants/eth'
 
 const executionLayerAddr = config.executionLayerAddr;
 const provider = new ethers.providers.JsonRpcProvider(executionLayerAddr);
 const privateKey = config.privateKey;
 const wallet = new ethers.Wallet(privateKey, provider);
 
-const oracleContract = new ethers.Contract(BEACON_ORACLE_CONTRACT_ADDR, beaconOracleAbi, wallet);
-const vNFTContract = new ethers.Contract(VNFT_CONTRACT_ADDR, vNFTAbi, wallet);
+const oracleContract = new ethers.Contract(getOracleContractAddr(), beaconOracleAbi, wallet);
+const vNFTContract = new ethers.Contract(getNftContractAddr(), vNFTAbi, wallet);
 
 export const oracleMemberAddress = wallet.address;
+
+// -------------------------- contracts address --------------------------------------
+export function getOracleContractAddr(): string {
+    let addr = "";
+    switch (config.network) {
+        case ETH_MAINNET:
+            addr = "";
+            break;
+        case ETH_GOERLI:
+            addr = "0x1CD81B2659BD959d0CE3c4547D1A78559A342F6c";
+            break;
+    }
+    return addr;
+}
+
+export function getNftContractAddr(): string {
+    let addr = "";
+    switch (config.network) {
+        case ETH_MAINNET:
+            addr = "";
+            break;
+        case ETH_GOERLI:
+            addr = "0xe3CE494D51Cb9806187b5Deca1B4B06c97e52EFc";
+            break;
+    }
+    return addr;
+}
 
 //-------------------------------- BeaconOracle --------------------------------
 

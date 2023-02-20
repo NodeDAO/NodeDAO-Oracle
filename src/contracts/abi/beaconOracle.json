@@ -5,7 +5,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "oracleMember",
+        "name": "_oracleMember",
         "type": "address"
       }
     ],
@@ -49,8 +49,27 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "_oldDao",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_dao",
+        "type": "address"
+      }
+    ],
+    "name": "DaoAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
-        "name": "expectedEpochId",
+        "name": "_expectedEpochId",
         "type": "uint256"
       }
     ],
@@ -114,13 +133,13 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "addBalance",
+        "name": "_addBalance",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "totalBalance",
+        "name": "_totalBalance",
         "type": "uint256"
       }
     ],
@@ -133,7 +152,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "totalBalance",
+        "name": "_totalBalance",
         "type": "uint256"
       }
     ],
@@ -146,7 +165,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "oracleMember",
+        "name": "_oracleMember",
         "type": "address"
       }
     ],
@@ -159,19 +178,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "epochId",
+        "name": "_pochId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "oracleMember",
+        "name": "_oracleMember",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint32",
-        "name": "sameReportCount",
+        "name": "_sameReportCount",
         "type": "uint32"
       },
       {
@@ -202,19 +221,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "epochId",
+        "name": "_epochId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "sameReportCount",
+        "name": "_sameReportCount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint32",
-        "name": "quorum",
+        "name": "_quorum",
         "type": "uint32"
       },
       {
@@ -245,7 +264,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "epochsPerFrame",
+        "name": "_epochsPerFrame",
         "type": "uint256"
       }
     ],
@@ -258,7 +277,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "expectedEpochId",
+        "name": "_expectedEpochId",
         "type": "uint256"
       }
     ],
@@ -496,6 +515,11 @@
         "internalType": "uint256",
         "name": "_genesisTime",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_nVNFTContractAddress",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -556,7 +580,7 @@
   },
   {
     "inputs": [],
-    "name": "liquidStakingContract",
+    "name": "liquidStakingContractAddress",
     "outputs": [
       {
         "internalType": "address",
@@ -710,7 +734,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_liqStakingAddress",
+        "name": "_liquidStakingContractAddress",
         "type": "address"
       }
     ],
@@ -764,25 +788,38 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "vNFTContract",
+    "outputs": [
+      {
+        "internalType": "contract IVNFT",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32[]",
-        "name": "proof",
+        "name": "_proof",
         "type": "bytes32[]"
       },
       {
         "internalType": "bytes",
-        "name": "pubkey",
+        "name": "_pubkey",
         "type": "bytes"
       },
       {
         "internalType": "uint256",
-        "name": "beaconBalance",
+        "name": "_validatorBalance",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "nftTokenID",
+        "name": "_tokenId",
         "type": "uint256"
       }
     ],
