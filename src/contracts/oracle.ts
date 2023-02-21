@@ -27,7 +27,7 @@ export function getOracleContractAddr(): string {
             addr = "";
             break;
         case ETH_GOERLI:
-            addr = "0x1CD81B2659BD959d0CE3c4547D1A78559A342F6c";
+            addr = "0x13766719dacc651065D5FF2a94831B46f84481b7";
             break;
     }
     return addr;

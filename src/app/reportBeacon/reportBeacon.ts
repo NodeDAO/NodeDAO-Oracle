@@ -108,9 +108,12 @@ async function reportBeacon() {
     await buildReportBeacon().then(r => {
         reportBeaconRes = r;
     }).catch(e => {
-        logger.error("buildReportBeacon error. reportBeaconRes:", reportBeaconRes, e)
         if (e instanceof ServiceException) {
-            throw new ServiceException(e.code, e.message);
+            if (e.code === "VALIDATOR_NOT_FOUND") {
+                logger.info("buildReportBeacon pubkey is zero. Don't need to report.");
+            } else {
+                logger.error("buildReportBeacon error. reportBeaconRes:", reportBeaconRes, e);
+            }
         }
     })
 
@@ -162,7 +165,7 @@ export async function buildReportBeaconAndMerkleTree(expectEpochId: ethers.BigNu
     // Filter invalid Pubkeys
     pubkeys = pubkeys.filter(pubkey => pubkey !== "0x");
 
-    logger.debug("[buildReportBeacon] expectEpochId:%i contract pubkey count:%i. invalid pubkeys('0x') count:%i. effective pubkey count:%i", expectEpochId, pubkeyOriginLen, pubkeyOriginLen - pubkeys.length, pubkeys.length);
+    logger.debug("[buildReportBeacon] expectEpochId:%i contract pubkey count:%i. pubkeys('0x') count:%i. effective pubkey count:%i", expectEpochId, pubkeyOriginLen, pubkeyOriginLen - pubkeys.length, pubkeys.length);
 
     // Construct map data to facilitate subsequent calculation
     let validatorMap = new Map<string, KinghashValidator>();
