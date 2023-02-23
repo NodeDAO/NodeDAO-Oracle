@@ -24,7 +24,7 @@ export function getOracleContractAddr(): string {
     let addr = "";
     switch (config.network) {
         case ETH_MAINNET:
-            addr = "";
+            addr = "0x503525159C0174C7758fe3D6C8eeCC595768a7A1";
             break;
         case ETH_GOERLI:
             addr = "0x13766719dacc651065D5FF2a94831B46f84481b7";
@@ -37,7 +37,7 @@ export function getNftContractAddr(): string {
     let addr = "";
     switch (config.network) {
         case ETH_MAINNET:
-            addr = "";
+            addr = "0x58553F5c5a6AEE89EaBFd42c231A18aB0872700d";
             break;
         case ETH_GOERLI:
             addr = "0xe3CE494D51Cb9806187b5Deca1B4B06c97e52EFc";
